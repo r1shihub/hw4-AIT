@@ -1,0 +1,23 @@
+{
+  "name": "homework04-r1shihub",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/nyu-csci-ua-0467-001-002-fall-2026/homework04-r1shihub#readme",
+  "bugs": {
+    "url": "https://github.com/nyu-csci-ua-0467-001-002-fall-2026/homework04-r1shihub/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyu-csci-ua-0467-001-002-fall-2026/homework04-r1shihub.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
