@@ -56,6 +56,16 @@ app.get('/quiz', (req, res) => {
     res.render('quiz', { question: 'What is 2 + 2?' });
 });
 app.get('/questions', (req, res) => {
-    res.render('questions', { questions: queries });
+    const keyword = (req.query.keyword || '').trim().toLowerCase();
+    let results = questions;
+    if (keyword) {
+        results = questions.filter(q =>
+            q.question.toLowerCase().includes(keyword) ||
+            q.genre.toLowerCase().includes(keyword) ||
+            q.answers.some(a => a.toLowerCase().includes(keyword))
+        );
+    }
+    console.log('keyword:', keyword, '-> matches:', results.length);
+    res.render('questions', { questions: results, keyword: req.query.keyword });
 });
 

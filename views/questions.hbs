@@ -1,7 +1,23 @@
-<ul>
+<form method="GET" action="/questions">
+  <label for="answer">Search for question: </label>
+  <input type="text" id="answer" name="answer">
+  <button type="submit">Submit</button>
+</form>
+{{#if keyword}}
+  <p>Showing results for "{{keyword}}"</p>
+{{/if}}
+<section class="questions">
   {{#each questions}}
-    <li>{{question}} <em>({{genre}})</em><em>({{answers}})</em></li>
+    <article class="question">
+      <h3>{{question}}</h3>
+      <p class="genre">Genre: {{genre}}</p>
+      <ul class="answers">
+        {{#each answers}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </article>
   {{else}}
-    <li>No questions yet.</li>
+    <p>No questions yet.</p>
   {{/each}}
-</ul>
+</section>
