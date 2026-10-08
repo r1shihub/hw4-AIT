@@ -46,3 +46,6 @@ main {
   margin: 20px auto;
   padding: 0 20px;
 }
+
+.correct-answer { background-color: #b7f0b7; }
+.incorrect-answer { background-color: #f5b5b5; }

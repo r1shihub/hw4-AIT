@@ -28,8 +28,9 @@ fs.readFile('code-samples/question-bank.json', 'utf8', (err, data) => {
 
 // Implement the decorate function
 export const decorate = (answer, correct) => {
-    return ""
-}
+    const cls = correct ? 'correct-answer' : 'incorrect-answer';
+    return `<span class="${cls}">${answer}</span>`;
+};
 // <a href="https://www.flaticon.com/free-icons/trivia" title="trivia icons">Trivia icons created by jenz1 - Flaticon</a>
 // Continue with the rest of the code
 
@@ -52,20 +53,86 @@ app.get('/', (req, res) => {
     res.redirect('/quiz');
 });
 
-app.get('/quiz', (req, res) => {
-    res.render('quiz', { question: 'What is 2 + 2?' });
-});
+
 app.get('/questions', (req, res) => {
-    const keyword = (req.query.keyword || '').trim().toLowerCase();
-    let results = questions;
-    if (keyword) {
-        results = questions.filter(q =>
-            q.question.toLowerCase().includes(keyword) ||
-            q.genre.toLowerCase().includes(keyword) ||
-            q.answers.some(a => a.toLowerCase().includes(keyword))
+    const answer = (req.query.answer || '').trim().toLowerCase();
+    let results = queries;
+    console.log("Keyword: ", answer);
+    if (answer) {
+        results = queries.filter(q =>
+            q.question.toLowerCase().includes(answer) ||
+            q.genre.toLowerCase().includes(answer) ||
+            q.answers.some(a => a.toLowerCase().includes(answer))
         );
     }
-    console.log('keyword:', keyword, '-> matches:', results.length);
-    res.render('questions', { questions: results, keyword: req.query.keyword });
+    console.log('keyword:', answer, '-> matches:', results.length);
+    res.render('questions', { questions: results, answer: req.query.answer });
 });
 
+app.post('/questions', (req, res) => {
+    console.log(req.body);
+    const q = (req.body.newQuestion || '').trim();
+    const g = (req.body.newGenre || '').trim();
+    const answers = (req.body.newAnswer || '').trim().split(',');
+    let quer = new query(randomUUID(), q, g, answers);
+    queries.push(quer);
+    res.render('questions', {questions: queries})
+})
+
+app.get('/quiz', (req, res) => {
+    const index = Math.floor(Math.random() * queries.length);
+    const randomQuery = queries[index];
+
+    res.render('quiz', {
+        question: randomQuery.question,
+        id: randomQuery.id
+    });
+});
+
+app.post('/quiz', (req, res) => {
+    const { id, answer } = req.body;
+    const current = queries.find(q => q.id === id);
+
+    if (!current) {
+        return res.status(404).send('Question not found');
+    }
+
+    // split the submitted string and make it not empty
+    let given = (answer || '').split(',').map(a => a.trim())
+    given = given.filter(a => a !== '');
+
+    //lowercase for comparison
+    const actual = current.answers.map(a => a.trim().toLowerCase());
+    const givenLower = given.map(a => a.toLowerCase());
+
+    // decorated
+    const corrections = [];
+
+    for (const a of given) {
+        const isCorrect = actual.includes(a.toLowerCase());
+        corrections.push(decorate(a, isCorrect));
+    }
+
+    const correctionString = corrections.join(', ');
+
+    // overall status
+    const matched = new Set(givenLower.filter(a => actual.includes(a)));
+    const noWrongAnswers = givenLower.every(a => actual.includes(a));
+    let status;
+
+    if (matched.size === 0) {
+        status = 'Incorrect';
+    } else if (noWrongAnswers && matched.size === actual.length) {
+        status = 'Correct';
+    } else {
+        status = 'Partially Correct';
+    }
+
+    res.render('quiz', {
+        question: current.question,
+        id: current.id,
+        answer: answer,
+        corrections: correctionString,
+        status: status
+    });
+});

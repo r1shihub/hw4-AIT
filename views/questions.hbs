@@ -1,6 +1,6 @@
 <form method="GET" action="/questions">
   <label for="answer">Search for question: </label>
-  <input type="text" id="answer" name="answer">
+  <input type="text" id="answer" name="answer", placeholder="Search questions">
   <button type="submit">Submit</button>
 </form>
 {{#if keyword}}
@@ -21,3 +21,11 @@
     <p>No questions yet.</p>
   {{/each}}
 </section>
+
+<form method="POST" action="/questions">
+  <label for="answer">Add new question: </label>
+  <input type="text" id="newQuestion" name="newQuestion", placeholder="Question">
+  <input type="text" id="newGenre" name="newGenre", placeholder="Genre">
+  <input type="text" id="newAnswer" name="newAnswer", placeholder="Answer">
+  <button type="submit">Submit</button>
+</form>
