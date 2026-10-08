@@ -55,28 +55,29 @@ app.get('/', (req, res) => {
 
 
 app.get('/questions', (req, res) => {
-    const answer = (req.query.answer || '').trim().toLowerCase();
+    const search = (req.query.search || '').trim().toLowerCase();
     let results = queries;
-    console.log("Keyword: ", answer);
-    if (answer) {
+
+    if (search) {
         results = queries.filter(q =>
-            q.question.toLowerCase().includes(answer) ||
-            q.genre.toLowerCase().includes(answer) ||
-            q.answers.some(a => a.toLowerCase().includes(answer))
+            q.question.toLowerCase().includes(search) ||
+            q.genre.toLowerCase().includes(search) ||
+            q.answers.some(a => a.toLowerCase().includes(search))
         );
     }
-    console.log('keyword:', answer, '-> matches:', results.length);
-    res.render('questions', { questions: results, answer: req.query.answer });
+
+    res.render('questions', { questions: results, search: req.query.search });
 });
 
 app.post('/questions', (req, res) => {
     console.log(req.body);
-    const q = (req.body.newQuestion || '').trim();
-    const g = (req.body.newGenre || '').trim();
-    const answers = (req.body.newAnswer || '').trim().split(',');
+    const q = (req.body.question || '').trim();
+    const g = (req.body.genre || '').trim();
+    const answers = (req.body.answers || '').trim().split(',');
     let quer = new query(randomUUID(), q, g, answers);
     queries.push(quer);
     res.render('questions', {questions: queries})
+    res.redirect('/questions')
 })
 
 app.get('/quiz', (req, res) => {
